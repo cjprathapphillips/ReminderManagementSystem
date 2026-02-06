@@ -10,6 +10,7 @@ import edu.prathap.reminder.repo.UserRepo;
 import edu.prathap.reminder.service.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,10 +43,12 @@ public class ReminderController {
 	private UserRepo userRepo;
 
 	@RequestMapping("/All")
-	public ModelAndView all(HttpServletRequest httpServletRequest) {
+	public ModelAndView all(HttpServletRequest httpServletRequest,Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		List<Reminder> reminderList=reminderRepo.findAllByDeletedFalseOrderByRenewDate();
-		Long userId=(Long)httpServletRequest.getSession().getAttribute("userId");
-		if(null==userId) return new ModelAndView("index");
 		reminderList.forEach(reminder->{
 			Date renuewDate=reminder.getRenewDate();
 			Date today = new Date();
@@ -63,10 +66,12 @@ public class ReminderController {
 
 
 	@RequestMapping("/All Renewable")
-	public ModelAndView reminderRenewable(HttpServletRequest httpServletRequest,String message) {
+	public ModelAndView reminderRenewable(HttpServletRequest httpServletRequest,String message,Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		List<Reminder> reminderList=reminderRepo.reminderRenewable();
-		Long userId=(Long)httpServletRequest.getSession().getAttribute("userId");
-		if(null==userId) return new ModelAndView("index");
 		reminderList.forEach(reminder->{
 			Date renuewDate=reminder.getRenewDate();
 			Date today = new Date();
@@ -87,10 +92,12 @@ public class ReminderController {
 	}
 
 	@RequestMapping("/All Non-Renewable")
-	public ModelAndView allNonRenewable(HttpServletRequest httpServletRequest) {
+	public ModelAndView allNonRenewable(HttpServletRequest httpServletRequest, Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		List<Reminder> reminderList=reminderRepo.allNonRenewable();
-		Long userId=(Long)httpServletRequest.getSession().getAttribute("userId");
-		if(null==userId) return new ModelAndView("index");
 		reminderList.forEach(reminder->{
 			Date renuewDate=reminder.getRenewDate();
 			SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
@@ -104,7 +111,6 @@ public class ReminderController {
 	@RequestMapping("/Vehicle Insurance")
 	public ModelAndView vehicleInsurance(HttpServletRequest httpServletRequest) {
 		List<Reminder> reminderList=reminderRepo.findAllByDeletedFalseAndReminderTypeVehicleInsuranceOrderByRenewDate();
-		Long userId=(Long)httpServletRequest.getSession().getAttribute("userId");
 		reminderList.forEach(reminder->{
 			Date renuewDate=reminder.getRenewDate();
 			Date today = new Date();
@@ -218,15 +224,22 @@ public class ReminderController {
 	}
 
 	@RequestMapping("/add")
-	public ModelAndView add(HttpServletRequest httpServletRequest) {
+	public ModelAndView add(HttpServletRequest httpServletRequest,Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		List<ReminderType> reminderTypeList= reminderTypeRepo.findAllByDeletedFalse();
 		Long userId=(Long)httpServletRequest.getSession().getAttribute("userId");
 		return new ModelAndView("addReminder","reminderTypeList",reminderTypeList);
 	}
 
 	@RequestMapping(value="/saveReminder",method = RequestMethod.POST)
-	public ModelAndView saveReminder(@ModelAttribute Reminder reminder,HttpServletRequest httpServletRequest) {
-		Long userId=(Long)httpServletRequest.getSession().getAttribute("userId");
+	public ModelAndView saveReminder(@ModelAttribute Reminder reminder,HttpServletRequest httpServletRequest,Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		String save=httpServletRequest.getParameter("save");
 		String cancel=httpServletRequest.getParameter("cancel");
 		if(null!=httpServletRequest.getParameter("save")) {
@@ -248,26 +261,30 @@ public class ReminderController {
 		}
 //		List<Reminder> reminderList=reminderRepo.findAllByDeletedFalseOrderByRenewDate();
 //		return new ModelAndView("reminder", "reminderList",reminderList);
-		return reminderRenewable(httpServletRequest,save!=null?"Reminder Saved Successfully":"Reminder Save Cancelled");
+		return reminderRenewable(httpServletRequest,save!=null?"Reminder Saved Successfully":"Reminder Save Cancelled",authentication);
 	}
 
 	@RequestMapping(value="/editView")
-	public ModelAndView edit(@RequestParam(name = "id") Long id,HttpServletRequest httpServletRequest) {
-		Long userId=(Long)httpServletRequest.getSession().getAttribute("userId");
+	public ModelAndView edit(@RequestParam(name = "id") Long id,HttpServletRequest httpServletRequest,Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		Optional<Reminder> reminderOptional=reminderRepo.findById(id);
-		if(null==userId) return new ModelAndView("index");
 		return new ModelAndView("editReminder", "reminder",reminderOptional.get());
 	}
 
 	@RequestMapping(value="/edit",method = RequestMethod.POST)
-	public ModelAndView edit(@ModelAttribute Reminder reminder,HttpServletRequest request) {
-		Long userId=(Long)request.getSession().getAttribute("userId");
-		if(null==userId) return new ModelAndView("index");
+	public ModelAndView edit(@ModelAttribute Reminder reminder,HttpServletRequest request,Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		String save=request.getParameter("save");
 		String cancel=request.getParameter("cancel");
 		if(null!=request.getParameter("save")) {
 			Reminder reminderDb = reminderRepo.getReferenceById(reminder.getId());
-			Optional<CustomUser> userOptional= userRepo.findById(userId);
+			Optional<CustomUser> userOptional= userRepo.findById(customUser.getUserId());
 			reminder.setReminderType(reminderDb.getReminderType());
 			reminder.setCreatedDate(Timestamp.from(Instant.now()));
 			reminder.setDeleted(false);
@@ -283,20 +300,27 @@ public class ReminderController {
 		}
 //		List<Reminder> reminderList=reminderRepo.findAllByDeletedFalseOrderByRenewDate();
 //		return new ModelAndView("reminder", "reminderList",reminderList);
-		return reminderRenewable(request,save!=null?"Reminder Edited Successfully":"Reminder Edit Cancelled");
+		return reminderRenewable(request,save!=null?"Reminder Edited Successfully":"Reminder Edit Cancelled",authentication);
 	}
 
 	@RequestMapping(value="/delete")
-	public ModelAndView delete(@RequestParam(name = "id") Long id,HttpServletRequest httpServletRequest) {
+	public ModelAndView delete(@RequestParam(name = "id") Long id,HttpServletRequest httpServletRequest,Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		Long userId=(Long)httpServletRequest.getSession().getAttribute("userId");
 		Optional<Reminder> reminderOptional=reminderRepo.findById(id);
 		reminderRepo.delete(reminderOptional.get());
-		return reminderRenewable(httpServletRequest,"Reminder deleted Sucessfully");
+		return reminderRenewable(httpServletRequest,"Reminder deleted Sucessfully",authentication);
 	}
 
 	@RequestMapping(value="/renew")
-	public ModelAndView renew(@RequestParam(name = "id") Long id,HttpServletRequest httpServletRequest) {
-		Long userId=(Long)httpServletRequest.getSession().getAttribute("userId");
+	public ModelAndView renew(@RequestParam(name = "id") Long id,HttpServletRequest httpServletRequest,Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		Optional<Reminder> reminderOptional=reminderRepo.findById(id);
 		Reminder reminder=reminderOptional.get();
 		if(reminder.getFrequency().equals("Year")){
@@ -310,13 +334,17 @@ public class ReminderController {
 			reminder.setRenewDate(java.sql.Date.valueOf(localDate));
 		}
 		reminderRepo.save(reminder);
-		return reminderRenewable(httpServletRequest,"Reminder Renewed Successuflly");
+		return reminderRenewable(httpServletRequest,"Reminder Renewed Successuflly",authentication);
 	}
 
 	@RequestMapping(value="/sendReminderMail")
-	public ModelAndView sendReminderMail(@RequestParam(name = "id") Long id,HttpServletRequest httpServletRequest) {
+	public ModelAndView sendReminderMail(@RequestParam(name = "id") Long id,HttpServletRequest httpServletRequest,Authentication authentication) {
+		if(null==authentication) return new ModelAndView("index");
+		CustomUser customUser=(CustomUser)authentication.getPrincipal();
+		if(null==customUser.getUserId()) return new ModelAndView("index");
+
 		Reminder reminder = reminderRepo.getReferenceById(id);
 		emailService.sendReminderMail(id);
-		return reminderRenewable(httpServletRequest,"Email sent Successfully to "+reminder.getUser().getUsername());
+		return reminderRenewable(httpServletRequest,"Email sent Successfully to "+reminder.getUser().getUsername(),authentication);
 	}
 }
