@@ -71,12 +71,7 @@ public class EmailServiceImpl implements EmailService {
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.socketFactory.port", "465");
         prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        Session session = Session.getInstance(prop,
-                new jakarta.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication("apikey", "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");
-                    }
-                });
+        Session session = null;
         return session;
     }
 
@@ -88,7 +83,7 @@ public class EmailServiceImpl implements EmailService {
         prop.put("mail.smtp.socketFactory.port", "465");
         prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         Session session = Session.getInstance(prop,
-                new jakarta.mail.Authenticator() {
+                new Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication("yahoomailexternalaccess", "kzsmsknumtokxsnm");
                     }
@@ -104,7 +99,7 @@ public class EmailServiceImpl implements EmailService {
         prop.put("mail.smtp.socketFactory.port", "465");
         prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         Session session = Session.getInstance(prop,
-                new jakarta.mail.Authenticator() {
+                new Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication("prathapemailapplication", "fsiexwyuiaxshhud");
                     }
