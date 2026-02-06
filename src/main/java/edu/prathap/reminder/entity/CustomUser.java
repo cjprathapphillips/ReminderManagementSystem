@@ -3,10 +3,9 @@ package edu.prathap.reminder.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.GrantedAuthority;
-//import org.springframework.security.core.authority.SimpleGrantedAuthority;
-//import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Table(name = "CUSTOM_USER")
-public class CustomUser /*implements UserDetails*/ {
+public class CustomUser implements UserDetails {
     private static final String AUTHORITIES_DELIMITER = "::";
 
 
@@ -41,19 +40,19 @@ public class CustomUser /*implements UserDetails*/ {
      * Returns the authorities granted to the user.
      * @return a collection of GrantedAuthority objects
      */
-    /*@Override
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Split the authorities string and convert to a list of SimpleGrantedAuthority objects
         return Arrays.stream(this.authorities.split(AUTHORITIES_DELIMITER))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-    }*/
+    }
 
     /**
      * Returns the password used to authenticate the user.
      * @return the password
      */
-//    @Override
+    @Override
     public String getPassword() {
         return password;
     }
@@ -62,7 +61,7 @@ public class CustomUser /*implements UserDetails*/ {
      * Returns the username used to authenticate the user.
      * @return the username
      */
-//    @Override
+    @Override
     public String getUsername() {
         return username;
     }
@@ -80,7 +79,7 @@ public class CustomUser /*implements UserDetails*/ {
      * Indicates whether the user is locked or unlocked.
      * @return true if the account is non-locked, false otherwise
      */
-//    @Override
+    @Override
     public boolean isAccountNonLocked() {
         return true;
     }
@@ -89,7 +88,7 @@ public class CustomUser /*implements UserDetails*/ {
      * Indicates whether the user's credentials have expired.
      * @return true if the credentials are non-expired, false otherwise
      */
-//    @Override
+    @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
@@ -98,7 +97,7 @@ public class CustomUser /*implements UserDetails*/ {
      * Indicates whether the user is enabled.
      * @return true if the user is enabled, false otherwise
      */
-//    @Override
+    @Override
     public boolean isEnabled() {
         return true;
     }

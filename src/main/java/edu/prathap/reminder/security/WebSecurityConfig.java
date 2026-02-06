@@ -1,30 +1,27 @@
 package edu.prathap.reminder.security;
 
-//import com.example.demo.service.UserService;
 
-//import edu.prathap.reminder.service.UserService;
-import jakarta.servlet.DispatcherType;
+import edu.prathap.reminder.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.authentication.AuthenticationProvider;
-//import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 
-//@Configuration
-//@EnableWebSecurity
+@Configuration
+@EnableWebSecurity
 class WebSecurityConfig {
 
-    /*    @Autowired
+        @Autowired
         private UserService userService;
         @Bean
-        public AuthenticationProvider authenticationProvider(){
+        public DaoAuthenticationProvider authenticationProvider(){
             DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userService);
     //        provider.setUserDetailsService(userService);
             provider.setPasswordEncoder(passwordEncoder());
@@ -35,15 +32,15 @@ class WebSecurityConfig {
         protected PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
         }
-    */
-    /*@Bean
+
+    @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         request -> request
 //                                .requestMatchers("/*").permitAll()
-                                .requestMatchers("/").permitAll()
+                                .requestMatchers("/**").permitAll()
 //                                .requestMatchers("/mainMenu").permitAll()
 //                                .requestMatchers("/login").permitAll()
 //                                .requestMatchers("/create").permitAll()
@@ -51,13 +48,13 @@ class WebSecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/")
+                        .loginPage("/login")
                         .defaultSuccessUrl("/mainMenu", true)
                         .permitAll())
                 .logout(config -> config
-                        .logoutSuccessUrl("/"))
+                        .logoutSuccessUrl("/login"))
                 .build();
-    }*/
+    }
 
 
 

@@ -71,39 +71,9 @@ public class EmailServiceImpl implements EmailService {
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.socketFactory.port", "465");
         prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        Session session = null;
+        Session session =null;
         return session;
     }
 
-    private Session getYahooSession(){
-        Properties prop = new Properties();
-        prop.put("mail.smtp.host", "smtp.mail.yahoo.com");
-        prop.put("mail.smtp.port", "465");
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.socketFactory.port", "465");
-        prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        Session session = Session.getInstance(prop,
-                new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication("yahoomailexternalaccess", "kzsmsknumtokxsnm");
-                    }
-                });
-        return session;
-    }
 
-    private Session getGmailSession(){
-        Properties prop = new Properties();
-        prop.put("mail.smtp.host", "smtp.gmail.com");
-        prop.put("mail.smtp.port", "465");
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.socketFactory.port", "465");
-        prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        Session session = Session.getInstance(prop,
-                new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication("prathapemailapplication", "fsiexwyuiaxshhud");
-                    }
-                });
-        return session;
-    }
 }

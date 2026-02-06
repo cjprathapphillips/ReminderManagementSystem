@@ -4,17 +4,13 @@ package edu.prathap.reminder.service;
 import edu.prathap.reminder.entity.CustomUser;
 import edu.prathap.reminder.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-/*@Service
+@Service
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepo userRepository; // Injects the UserRepo for accessing user data
@@ -32,16 +28,9 @@ public class UserService implements UserDetailsService {
         customUser.setUsername(username);
         customUser.setPassword(new BCryptPasswordEncoder().encode(password));
         customUser.setAuthorities("USER");
-        *//*CustomUser user = CustomUser
-                .builder()
-                .username(username)
-                .password(new BCryptPasswordEncoder().encode(password)) // Encrypts the password
-                .authorities("USER") // Assigns default authority
-                .build();*//*
-
         // Saves the new user to the database
         userRepository.save(customUser);
 
         return "Create Successfully !";
     }
-}*/
+}
