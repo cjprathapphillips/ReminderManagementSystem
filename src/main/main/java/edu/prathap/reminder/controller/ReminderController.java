@@ -1,8 +1,8 @@
 package edu.prathap.reminder.controller;
 
+import edu.prathap.reminder.entity.RmsUser;
 import edu.prathap.reminder.entity.Reminder;
 import edu.prathap.reminder.entity.ReminderType;
-import edu.prathap.reminder.entity.RmsUser;
 import edu.prathap.reminder.repo.ReminderRepo;
 import edu.prathap.reminder.repo.ReminderTypeRepo;
 import edu.prathap.reminder.repo.UserRepo;
