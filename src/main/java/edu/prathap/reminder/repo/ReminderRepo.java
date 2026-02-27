@@ -12,7 +12,7 @@ public interface ReminderRepo extends JpaRepository<Reminder,Long> {
 
     public List<Reminder> findAllByDeletedFalseOrderByRenewDate();
 
-    @Query(value=" from Reminder reminder where reminder.reminderType in ('Birthday','Marriage Anniversary') " +
+    @Query(value=" from Reminder reminder where reminder.reminderType in ('Birthday','Marriage Anniversary','Annual Day and Graduation') " +
             "and reminder.deleted=false order by month(renewDate),day(renewDate)")
     public List<Reminder> allNonRenewable();
 

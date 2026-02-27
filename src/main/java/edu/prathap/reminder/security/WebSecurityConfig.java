@@ -1,7 +1,9 @@
 package edu.prathap.reminder.security;
 
 
+import com.mysql.cj.protocol.AuthenticationProvider;
 import edu.prathap.reminder.service.UserService;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +54,10 @@ class WebSecurityConfig {
                         .defaultSuccessUrl("/mainMenu", true)
                         .permitAll())
                 .logout(config -> config
-                        .logoutSuccessUrl("/login"))
+                        .logoutSuccessUrl("/login")
+//                        .invalidateHttpSession(true) // Explicitly invalidates the session (default behavior)
+//                        .deleteCookies("JSESSIONID")
+                )
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package edu.prathap.reminder.service;
 import java.io.File;
+import java.util.Date;
 import java.util.Properties;
 
 import edu.prathap.reminder.entity.EmailDetails;
@@ -26,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
         Reminder reminder = reminderRepo.getReferenceById(id);
         EmailDetails emailDetails = new EmailDetails();
         emailDetails.setRecipient(reminder.getUser().getUsername());
-        emailDetails.setSubject("Renewal Reminder For -"+reminder.getName()+"("+reminder.getReminderType()+")");
+        emailDetails.setSubject("Renewal Reminder For -"+reminder.getName()+"("+reminder.getReminderType()+") Sent On "+(new Date()).toString());
         emailDetails.setMsgBody(" Hi "+reminder.getUser().getUsername()
                 +", \n Please renew Your "+reminder.getName() +"("+reminder.getReminderType()+") as it is getting expired on "+reminder.getRenewDate() +"\n"
                 +"<table border=1 style=\"background-color:#FFFFE0;\">"
@@ -39,7 +40,7 @@ public class EmailServiceImpl implements EmailService {
 //                +"Name:"+reminder.getName()+"\n"
 //                +"Expire Date:"+reminder.getRenewDate()+"\n"
                 +"</table>"
-        +" \n Thank You \n Have a Great Day \n Reminder Management System");
+        +" \n Thank You \n Have a Great Day \n Reminder Management System) Sent On "+(new Date()).toString());
         sendMail(emailDetails);
     }
 
@@ -80,5 +81,35 @@ public class EmailServiceImpl implements EmailService {
         return session;
     }
 
+    private Session getYahooSession(){
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.mail.yahoo.com");
+        prop.put("mail.smtp.port", "465");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.socketFactory.port", "465");
+        prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        Session session = Session.getInstance(prop,
+                new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication("yahoomailexternalaccess", "kzsmsknumtokxsnm");
+                    }
+                });
+        return session;
+    }
 
+    private Session getGmailSession(){
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "465");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.socketFactory.port", "465");
+        prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        Session session = Session.getInstance(prop,
+                new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication("prathapemailapplication", "fsiexwyuiaxshhud");
+                    }
+                });
+        return session;
+    }
 }

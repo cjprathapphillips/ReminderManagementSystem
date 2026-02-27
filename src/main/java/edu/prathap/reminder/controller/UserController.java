@@ -1,5 +1,6 @@
 package edu.prathap.reminder.controller;
 
+import edu.prathap.reminder.entity.Reminder;
 import edu.prathap.reminder.entity.RmsUser;
 import edu.prathap.reminder.repo.UserRepo;
 import edu.prathap.reminder.service.UserService;
@@ -7,13 +8,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("user")
@@ -24,6 +28,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Transactional
     @RequestMapping("/list")
     public ModelAndView list(HttpServletRequest httpServletRequest, Authentication authentication) {
         if(null==authentication) return new ModelAndView("index");
@@ -35,6 +40,7 @@ public class UserController {
         return new ModelAndView("user", "userList",userList);
     }
 
+    @Transactional
     @RequestMapping(value="/editView")
     public ModelAndView edit(@RequestParam(name = "userId",required = false) Long userId, HttpServletRequest httpServletRequest, Authentication authentication) {
         if(null==authentication) return new ModelAndView("index");

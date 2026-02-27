@@ -1,18 +1,12 @@
 package edu.prathap.reminder.repo;
 
-import edu.prathap.reminder.entity.CustomUser;
-import edu.prathap.reminder.entity.Reminder;
 import edu.prathap.reminder.entity.RmsUser;
-import edu.prathap.reminder.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface UserRepo extends JpaRepository<RmsUser,Long> {
     RmsUser findByUsername(String username);
-    public RmsUser findAllByUsernameAndPassword(@Param("username") String username,@Param("password") String password);
+    public RmsUser findAllByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
 }

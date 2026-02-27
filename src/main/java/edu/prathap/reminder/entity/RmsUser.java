@@ -6,6 +6,10 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +39,7 @@ public class RmsUser implements UserDetails {
 
     // Authorities granted to the user, stored as a single string
     private String authorities;
+    private String phoneNumber;
 
     /**
      * Returns the authorities granted to the user.

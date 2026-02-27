@@ -14,10 +14,11 @@
 </head>
 
    <body>
-       <header style="background-color:#fcd381">
+   <header class="header text-white text-center" style="background-color:#fcd381">
+       <!--header class="header text-white text-center" style="background-color:#fcd381"-->
            <nav class="navbar navbar-light">
                <div class="container ">
-                   <a class="navbar-brand" href="/">Reminder Management System</a>
+                   <a class="navbar-brand" href="/mainMenu">Reminder Management System</a>
                    <a class="nav-link active" href="/reminder/All" aria-current="page"><input type="submit" name="submit" class="btn btn-warning btn-md" value="List All"></a>
                    <a class="nav-link active" href="/reminder/All Non-Renewable" aria-current="page"><input type="submit" name="submit" class="btn btn-warning btn-md" value="Non-Renewable"></a>
                    <a class="nav-link active" href="/reminder/All Renewable" aria-current="page"><input type="submit" name="submit" class="btn btn-warning btn-md" value="Renewable"></a>
@@ -28,7 +29,8 @@
                    <a class="nav-link active" href="/reminder/Driving Licence" aria-current="page"><input type="submit" name="submit" class="btn btn-info btn-md" value="Driving Licence"></a>
                    <a class="nav-link active" href="/reminder/Birthday" aria-current="page"><input type="submit" name="submit" class="btn btn-info btn-md" value="Birthday"></a> -->
                    <a class="nav-link" href="/reminder/add"><input type="submit" name="submit" class="btn btn-warning btn-md" value="Add Reminder"></a>
-                   <a class="nav-link" href="/"><input type="submit" name="submit" class="btn btn-warning btn-md" value="Logout"></a>
+                   <a class="nav-link" href="/user/list"><input type="submit" name="submit" class="btn btn-warning btn-md" value="User"></a>
+                   <a class="nav-link" href="/login"><input type="submit" name="submit" class="btn btn-warning btn-md" value="Logout"></a>
                </div>
 
                <div class="collapse navbar-collapse" id="navbarText">

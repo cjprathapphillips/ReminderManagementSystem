@@ -1,16 +1,25 @@
 package edu.prathap.reminder.controller;
 
+import edu.prathap.reminder.entity.RmsUser;
 import edu.prathap.reminder.entity.Reminder;
 import edu.prathap.reminder.entity.ReminderType;
-import edu.prathap.reminder.entity.RmsUser;
 import edu.prathap.reminder.repo.ReminderRepo;
 import edu.prathap.reminder.repo.ReminderTypeRepo;
 import edu.prathap.reminder.repo.UserRepo;
 import edu.prathap.reminder.service.EmailService;
+import edu.prathap.reminder.service.KafkaProducerService;
+import edu.prathap.reminder.service.ReminderService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.servlet.Session;
+import org.springframework.kafka.KafkaException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,10 +37,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
+@Slf4j
 @Controller
 @RequestMapping("reminder")
+@Transactional
 public class ReminderController {
+
 	@Autowired
 	private ReminderRepo reminderRepo;
 	@Autowired
@@ -40,6 +53,11 @@ public class ReminderController {
 	private EmailService emailService;
 	@Autowired
 	private UserRepo userRepo;
+	@Autowired
+	private KafkaProducerService producerService;
+    @Autowired
+    ReminderService reminderService;
+
 
 	@RequestMapping("/All")
 	public ModelAndView all(HttpServletRequest httpServletRequest,Authentication authentication) {
@@ -64,24 +82,33 @@ public class ReminderController {
 	}
 
 
+
 	@RequestMapping("/All Renewable")
 	public ModelAndView reminderRenewable(HttpServletRequest httpServletRequest,String message,Authentication authentication) {
+		final String topic ="TESTKAFKA";
 		if(null==authentication) return new ModelAndView("index");
 		RmsUser customUser=(RmsUser)authentication.getPrincipal();
 		if(null==customUser.getUserId()) return new ModelAndView("index");
 
-		List<Reminder> reminderList=reminderRepo.reminderRenewable();
+		SimpleDateFormat gridFormat = new SimpleDateFormat("dd-MMM-yyyy");
+        List<Reminder> reminderList = reminderService.reminderRenewable();
+//		Boolean messageSent = producerService.sendMessage(topic, "Starting New List ================="+System.currentTimeMillis());
+//        log.trace("messageSent:::"+messageSent);
 		reminderList.forEach(reminder->{
 			Date renuewDate=reminder.getRenewDate();
 			Date today = new Date();
 			long dateDiff=renuewDate.getTime()-today.getTime();
 			long diffInDays = TimeUnit.MILLISECONDS.toDays(dateDiff);
-            reminder.setUrgentCountDays(diffInDays);
+            reminder.setUrgentCountDays(TimeUnit.MILLISECONDS.toDays(dateDiff));
+			reminder.setRenewDateString(gridFormat.format(reminder.getRenewDate()));
 			if(diffInDays<=30) {
 				reminder.setUrgent(true);
 			}else{
 				reminder.setUrgent(false);
 			}
+//			if(messageSent)
+//			    producerService.sendMessage(topic, reminder.getName() + "---" + reminder.getReminderType() + "---" + reminder.getRenewDate());
+
 		});
 		ModelAndView modelAndView = new ModelAndView("reminder");
 		if(null!=message)
@@ -90,19 +117,24 @@ public class ReminderController {
 		return modelAndView;
 	}
 
+
 	@RequestMapping("/All Non-Renewable")
 	public ModelAndView allNonRenewable(HttpServletRequest httpServletRequest, Authentication authentication) {
 		if(null==authentication) return new ModelAndView("index");
 		RmsUser customUser=(RmsUser)authentication.getPrincipal();
 		if(null==customUser.getUserId()) return new ModelAndView("index");
-
-		List<Reminder> reminderList=reminderRepo.allNonRenewable();
+		SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
+		SimpleDateFormat gridFormat = new SimpleDateFormat("dd-MMM-yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
+		List<Reminder> reminderList=reminderService.allNonRenewable();
 		reminderList.forEach(reminder->{
-			Date renuewDate=reminder.getRenewDate();
-			SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
-			Integer renewMonth=Integer.parseInt(monthFormat.format(renuewDate));
-			Integer todayMonth=Integer.parseInt(monthFormat.format(new Date()));
+			long renewDate=Long.parseLong(dateFormat.format(reminder.getRenewDate()));
+			long todayDate=Long.parseLong(dateFormat.format(new Date()));
+			long renewMonth=Long.parseLong(monthFormat.format(reminder.getRenewDate()));
+			long todayMonth=Long.parseLong(monthFormat.format(new Date()));
 			reminder.setUrgentCountMonth(renewMonth-todayMonth);
+			reminder.setUrgentCountDays(renewDate-todayDate);
+			reminder.setRenewDateString(gridFormat.format(reminder.getRenewDate()));
 		});
 		return new ModelAndView("reminderNonRenew", "reminderList",reminderList);
 	}
@@ -264,6 +296,7 @@ public class ReminderController {
 		return reminderRenewable(httpServletRequest,save!=null?"Reminder Saved Successfully":"Reminder Save Cancelled",authentication);
 	}
 
+	@Transactional
 	@RequestMapping(value="/editView")
 	public ModelAndView edit(@RequestParam(name = "id") Long id,HttpServletRequest httpServletRequest,Authentication authentication) {
 		if(null==authentication) return new ModelAndView("index");
@@ -321,6 +354,7 @@ public class ReminderController {
 		RmsUser customUser=(RmsUser)authentication.getPrincipal();
 		if(null==customUser.getUserId()) return new ModelAndView("index");
 
+		SimpleDateFormat gridFormat = new SimpleDateFormat("dd-MMM-yyyy");
 		Optional<Reminder> reminderOptional=reminderRepo.findById(id);
 		Reminder reminder=reminderOptional.get();
 		if(reminder.getFrequency().equals("Year")){
@@ -331,6 +365,7 @@ public class ReminderController {
 			LocalDate localDate = calendar.getTime().toInstant()
 					.atZone(ZoneId.systemDefault())
 					.toLocalDate();
+			reminder.setRenewDateString(gridFormat.format(reminder.getRenewDate()));
 			reminder.setRenewDate(java.sql.Date.valueOf(localDate));
 		}
 		reminderRepo.save(reminder);

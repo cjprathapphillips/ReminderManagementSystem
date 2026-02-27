@@ -40,7 +40,7 @@ public class Reminder implements Serializable {
     @Transient
     private Long frequencyTypeCode;
     @Transient
-    private Integer urgentCountMonth;
+    private Long urgentCountMonth;
     @Transient
     private String renewDateString;
 
